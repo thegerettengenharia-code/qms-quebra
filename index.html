@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(rs) {
+        rs.forEach(function(r) { r.unregister(); });
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(ks) {
+        ks.forEach(function(k) { caches.delete(k); });
+      });
+    }
+  </script>
+  <meta name="theme-color" content="#06284f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="QMS Quebra">
+  <title>QMS Quebra — Produção Diária 2º Turno</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="img/icone-192.png">
+  <link rel="apple-touch-icon" href="img/icone-192.png">
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/responsivo.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div id="toasts"></div>
+
+  <!-- Barra de instalação PWA -->
+  <div id="barra-instalacao" class="barra-instalacao oculta" role="alert">
+    <div class="barra-instalacao-conteudo">
+      <p>Adicione QMS Quebra à sua <strong>Tela Inicial</strong> para acesso rápido e uso offline.</p>
+      <button id="btn-instalar" class="btn btn-primario btn-largo">Instalar</button>
+    </div>
+  </div>
+
+  <!-- ==================== TELA INÍCIO ==================== -->
+  <section id="tela-inicio" class="tela ativa">
+    <header class="cabecalho">
+      <div class="logo-titulo">
+        <div class="logo-quadro">Q</div>
+        <div>
+          <h1>QMS Quebra</h1>
+          <p>Quebra de Canais e Jato · 2º Turno</p>
+        </div>
+      </div>
+      <div class="status-salvo" id="status-salvo">Salvo</div>
+    </header>
+
+    <main class="conteudo">
+      <div class="card slogans">
+        <p class="slogan-principal">Um bom dia é um dia sem Acidentes.</p>
+        <p class="slogan-contador" id="slogan-contador">Estamos há <strong id="dias-sem-acidente">?</strong> dias sem Acidentes na Quebra de Canais e Jato no 2º Turno</p>
+        <p class="slogan-planilha">Planilha oficial: Produção Diária QMS 2026</p>
+      </div>
+
+      <nav class="menu-principal" role="navigation" aria-label="Menu principal">
+        <a href="#/lancar" class="btn btn-primario btn-largo" data-rota="lancar">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Lançar dados</span>
+        </a>
+        <a href="#/registros" class="btn btn-secundario btn-largo" data-rota="registros">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span>Registros</span>
+        </a>
+        <a href="#/exportar" class="btn btn-secundario btn-largo" data-rota="exportar">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Exportar / Compartilhar</span>
+        </a>
+        <a href="#/ajustes" class="btn btn-terciario btn-largo" data-rota="ajustes">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Ajustes</span>
+        </a>
+      </nav>
+
+      <div class="versao">v1.0 · dados no aparelho</div>
+    </main>
+  </section>
+
+  <!-- ==================== TELA LANÇAR DADOS ==================== -->
+  <section id="tela-lancar" class="tela oculta">
+    <header class="cabecalho">
+      <button class="btn-voltar" onclick="navegarPara('inicio')" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1>Lançar Produção</h1>
+      <div class="status-salvo" id="status-salvo-lancar">Salvo</div>
+    </header>
+
+    <main class="conteudo">
+      <div class="card">
+        <div class="linha-cabecalho">
+          <label for="sel-maquina">Máquina</label>
+          <select id="sel-maquina" onchange="renderizarTabelaProducao()">
+            <option value="HWS-01">HWS-01 – Linhas 01 e 02</option>
+            <option value="HWS-02">HWS-02 – Linhas 03 e 04</option>
+            <option value="HUNTER">HUNTER – Linha 02</option>
+            <option value="EUROMAQ">EUROMAQ – Linha 01</option>
+          </select>
+        </div>
+        <div class="linha-cabecalho">
+          <label for="inp-data-producao">Data da Produção</label>
+          <input type="date" id="inp-data-producao" onchange="atualizarLinhaAtual()">
+        </div>
+        <div class="linha-cabecalho">
+          <label for="inp-dias-sem-acidente">Dias sem Acidente</label>
+          <input type="number" id="inp-dias-sem-acidente" min="0" value="0" onchange="salvarDiasSemAcidente()">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Produção — <span id="titulo-maquina">HWS-01</span></h2>
+        <div class="tabela-wrapper" id="tabela-producao-wrapper">
+          <table id="tabela-producao">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Item</th>
+                <th>Qtde Peças</th>
+                <th>Data Fusão</th>
+                <th>Absenteísmo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-producao"></tbody>
+          </table>
+        </div>
+        <div class="acoes-tabela">
+          <button class="btn btn-primario" onclick="adicionarLinhaProducao()">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Adicionar item
+          </button>
+          <button class="btn btn-secundario" onclick="duplicarUltimaLinha()">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Duplicar última
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="card-refugo" style="display:none;">
+        <h2>Refugo — <span id="titulo-maquina-refugo">HWS-01</span></h2>
+        <div class="tabela-wrapper">
+          <table id="tabela-refugo">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Item</th>
+                <th>Qtde Peças</th>
+                <th>Data Fusão</th>
+                <th>Motivo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-refugo"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-primario" onclick="adicionarLinhaRefugo()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Adicionar refugo
+        </button>
+      </div>
+
+      <div class="card" id="card-paradas" style="display:none;">
+        <h2>Paradas — <span id="titulo-maquina-paradas">HWS-01</span></h2>
+        <div class="tabela-wrapper">
+          <table id="tabela-paradas">
+            <thead>
+              <tr>
+                <th>Parada</th>
+                <th>Tempo</th>
+                <th>Motivo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-paradas"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-primario" onclick="adicionarLinhaParada()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Adicionar parada
+        </button>
+      </div>
+
+      <div class="card" id="card-aramados" style="display:none;">
+        <h2>Aramados Vazios</h2>
+        <div class="campo">
+          <label for="inp-aramados">Quantidade</label>
+          <input type="number" id="inp-aramados" min="0" value="0" onchange="salvarAramados()">
+        </div>
+      </div>
+
+      <div class="card" id="card-caixas" style="display:none;">
+        <h2>Caixas Vazias</h2>
+        <div class="campo">
+          <label for="inp-caixas">Quantidade</label>
+          <input type="number" id="inp-caixas" min="0" value="0" onchange="salvarCaixas()">
+        </div>
+      </div>
+    </main>
+
+    <nav class="navegacao-inferior" role="navigation" aria-label="Navegação principal">
+      <a href="#/inicio" class="nav-item" data-rota="inicio">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="#/lancar" class="nav-item ativo" data-rota="lancar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Lançar</span>
+      </a>
+      <a href="#/registros" class="nav-item" data-rota="registros">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Registros</span>
+      </a>
+      <a href="#/exportar" class="nav-item" data-rota="exportar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Exportar</span>
+      </a>
+    </nav>
+  </section>
+
+  <!-- ==================== TELA REGISTROS ==================== -->
+  <section id="tela-registros" class="tela oculta">
+    <header class="cabecalho">
+      <button class="btn-voltar" onclick="navegarPara('inicio')" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1>Registros</h1>
+      <div class="status-salvo" id="status-salvo-registros">Salvo</div>
+    </header>
+
+    <main class="conteudo">
+      <div class="card">
+        <div class="filtros">
+          <div class="campo">
+            <label for="filtro-maquina">Máquina</label>
+            <select id="filtro-maquina" onchange="aplicarFiltros()">
+              <option value="">Todas</option>
+              <option value="HWS-01">HWS-01</option>
+              <option value="HWS-02">HWS-02</option>
+              <option value="HUNTER">HUNTER</option>
+              <option value="EUROMAQ">EUROMAQ</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="filtro-data-inicio">Data inicial</label>
+            <input type="date" id="filtro-data-inicio" onchange="aplicarFiltros()">
+          </div>
+          <div class="campo">
+            <label for="filtro-data-fim">Data final</label>
+            <input type="date" id="filtro-data-fim" onchange="aplicarFiltros()">
+          </div>
+          <div class="campo">
+            <label for="filtro-busca">Busca livre</label>
+            <input type="text" id="filtro-busca" placeholder="Item, motivo, absenteísmo..." oninput="aplicarFiltros()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="abas-registros" role="tablist">
+          <button class="aba-btn ativo" role="tab" data-aba="producao" onclick="trocarAbaRegistros('producao')">Produção</button>
+          <button class="aba-btn" role="tab" data-aba="refugo" onclick="trocarAbaRegistros('refugo')">Refugo</button>
+          <button class="aba-btn" role="tab" data-aba="paradas" onclick="trocarAbaRegistros('paradas')">Paradas</button>
+          <button class="aba-btn" role="tab" data-aba="aramados" onclick="trocarAbaRegistros('aramados')">Aramados</button>
+          <button class="aba-btn" role="tab" data-aba="caixas" onclick="trocarAbaRegistros('caixas')">Caixas</button>
+        </div>
+        <div class="tabela-wrapper" id="tabela-registros-wrapper">
+          <table id="tabela-registros">
+            <thead id="thead-registros"></thead>
+            <tbody id="tbody-registros"></tbody>
+          </table>
+        </div>
+        <div class="resumo-registros" id="resumo-registros"></div>
+      </div>
+    </main>
+
+    <nav class="navegacao-inferior" role="navigation" aria-label="Navegação principal">
+      <a href="#/inicio" class="nav-item" data-rota="inicio">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="#/lancar" class="nav-item" data-rota="lancar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Lançar</span>
+      </a>
+      <a href="#/registros" class="nav-item ativo" data-rota="registros">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Registros</span>
+      </a>
+      <a href="#/exportar" class="nav-item" data-rota="exportar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Exportar</span>
+      </a>
+    </nav>
+  </section>
+
+  <!-- ==================== TELA EXPORTAR / COMPARTILHAR ==================== -->
+  <section id="tela-exportar" class="tela oculta">
+    <header class="cabecalho">
+      <button class="btn-voltar" onclick="navegarPara('inicio')" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1>Exportar / Compartilhar</h1>
+      <div class="status-salvo" id="status-salvo-exportar">Pronto</div>
+    </header>
+
+    <main class="conteudo">
+      <div class="card">
+        <h2>Gerar planilha Excel</h2>
+        <p class="descricao">Cria o arquivo <strong>Itens_Quebra_2026_2º_Turno_PREENCHIDO.xlsx</strong> com todas as abas preenchidas conforme o modelo oficial.</p>
+        <div class="acoes-exportar">
+          <button class="btn btn-primario btn-largo" onclick="gerarExcel()">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar Excel
+          </button>
+          <button class="btn btn-secundario btn-largo" id="btn-compartilhar" onclick="compartilharArquivo()" disabled>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="16.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="3.49"/></svg>
+            Compartilhar (E-mail / WhatsApp)
+          </button>
+        </div>
+        <p class="dica" id="dica-compartilhar">Gere o Excel primeiro para habilitar o compartilhamento.</p>
+      </div>
+
+      <div class="card">
+        <h2>Backup / Restauração</h2>
+        <p class="descricao">Salve ou recupere todos os dados localmente (JSON).</p>
+        <div class="acoes-exportar">
+          <button class="btn btn-secundario" onclick="exportarBackup()">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar backup JSON
+          </button>
+          <label class="btn btn-secundario" style="cursor:pointer;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Restaurar backup
+            <input type="file" accept=".json" onchange="restaurarBackup(event)" style="display:none;">
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Limpar dados</h2>
+        <p class="descricao">Remove todos os registros do aparelho. <strong>Irreversível.</strong></p>
+        <button class="btn btn-perigo" onclick="confirmarLimparTudo()">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Apagar tudo
+        </button>
+      </div>
+    </main>
+
+    <nav class="navegacao-inferior" role="navigation" aria-label="Navegação principal">
+      <a href="#/inicio" class="nav-item" data-rota="inicio">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="#/lancar" class="nav-item" data-rota="lancar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Lançar</span>
+      </a>
+      <a href="#/registros" class="nav-item" data-rota="registros">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Registros</span>
+      </a>
+      <a href="#/exportar" class="nav-item ativo" data-rota="exportar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Exportar</span>
+      </a>
+    </nav>
+  </section>
+
+  <!-- ==================== TELA AJUSTES ==================== -->
+  <section id="tela-ajustes" class="tela oculta">
+    <header class="cabecalho">
+      <button class="btn-voltar" onclick="navegarPara('inicio')" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <h1>Ajustes</h1>
+    </header>
+
+    <main class="conteudo">
+      <div class="card">
+        <h2>Formato Data Fusão</h2>
+        <p class="descricao">A data de fusão usa formato livre: <strong>DD[LetraMês]AA</strong> (ex: 15M26 = 15/03/2026). Não é data de calendário.</p>
+        <div class="campo">
+          <label>
+            <input type="checkbox" id="chk-formato-fusao" checked disabled>
+            Formato DD + Letra do Mês + AA (ativado permanentemente)
+          </label>
+        </div>
+        <details>
+          <summary>Tabela de letras dos meses</summary>
+          <table class="tabela-letras-mes">
+            <thead><tr><th>Mês</th><th>Letra</th></tr></thead>
+            <tbody>
+              <tr><td>Janeiro</td><td>A</td></tr>
+              <tr><td>Fevereiro</td><td>B</td></tr>
+              <tr><td>Março</td><td>C</td></tr>
+              <tr><td>Abril</td><td>D</td></tr>
+              <tr><td>Maio</td><td>E</td></tr>
+              <tr><td>Junho</td><td>F</td></tr>
+              <tr><td>Julho</td><td>G</td></tr>
+              <tr><td>Agosto</td><td>H</td></tr>
+              <tr><td>Setembro</td><td>I</td></tr>
+              <tr><td>Outubro</td><td>J</td></tr>
+              <tr><td>Novembro</td><td>K</td></tr>
+              <tr><td>Dezembro</td><td>L</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2>Capacidade da Planilha</h2>
+        <p class="descricao">Sem limite de linhas — produção de turno inteiro.</p>
+        <div class="campo">
+          <label>
+            <input type="checkbox" id="chk-sem-limite" checked disabled>
+            Ilimitado (ativado permanentemente)
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Item Livre</h2>
+        <p class="descricao">O campo Item aceita qualquer texto/número digitado.</p>
+        <div class="campo">
+          <label>
+            <input type="checkbox" id="chk-item-livre" checked disabled>
+            Livre (ativado permanentemente)
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Sobre</h2>
+        <p class="descricao">QMS Quebra de Canais e Jato — 2º Turno</p>
+        <p class="descricao">Versão 1.0 · Dados armazenados localmente (IndexedDB)</p>
+        <p class="descricao">PWA instalável · Funciona offline</p>
+      </div>
+    </main>
+
+    <nav class="navegacao-inferior" role="navigation" aria-label="Navegação principal">
+      <a href="#/inicio" class="nav-item" data-rota="inicio">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="#/lancar" class="nav-item" data-rota="lancar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Lançar</span>
+      </a>
+      <a href="#/registros" class="nav-item" data-rota="registros">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Registros</span>
+      </a>
+      <a href="#/exportar" class="nav-item" data-rota="exportar">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Exportar</span>
+      </a>
+    </nav>
+  </section>
+
+  <!-- ==================== MODAIS ==================== -->
+  <div id="modal-confirmar" class="modal oculta" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal-conteudo">
+      <h3 id="modal-titulo">Confirmar</h3>
+      <p id="modal-mensagem"></p>
+      <div class="modal-acoes">
+        <button class="btn btn-secundario" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primario" id="btn-modal-confirmar">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-toast" class="modal oculta" role="alert" aria-live="polite">
+    <div class="modal-conteudo toast">
+      <p id="toast-mensagem"></p>
+    </div>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

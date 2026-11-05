@@ -1,0 +1,94 @@
+/* Responsivo */
+@media (max-width: 480px) {
+  .tela {
+    padding: 60px 12px 12px;
+  }
+  
+  .cabecalho h1 {
+    font-size: 1rem;
+  }
+  
+  .slogans .slogan-principal {
+    font-size: 1rem;
+  }
+  
+  .menu-principal .btn-primario,
+  .menu-principal .btn-secundario,
+  .menu-principal .btn-terciario,
+  .menu-principal .btn-perigo {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+  
+  .navegacao-inferior {
+    flex-direction: column;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding: 12px 0;
+  }
+  
+  .navegacao-inferior .nav-item {
+    font-size: 0.7rem;
+  }
+  
+  .navegacao-inferior svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .tabela-wrapper {
+    font-size: 0.75rem;
+  }
+  
+  #tabela-producao th,
+  #tabela-refugo th,
+  #tabela-paradas th,
+  #tabela-registros th {
+    padding: 6px 4px;
+  }
+  
+  #tabela-producao td,
+  #tabela-refugo td,
+  #tabela-paradas td,
+  #tabela-registros td {
+    padding: 6px 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .conteudo {
+    padding: 0 8px;
+  }
+  
+  .card {
+    padding: 12px;
+  }
+  
+  .navegacao-inferior {
+    padding: 8px 0;
+  }
+}
+
+/* Tela cheia para formulários grandes */
+@media (min-width: 481px) and (max-width: 768px) {
+  .linha-cabecalho {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .linha-cabecalho label {
+    margin-bottom: 4px;
+  }
+}
+
+/* Safe area para dispositivos com notch */
+@supports (padding: env(safe-area-inset-top)) {
+  .cabecalho {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .navegacao-inferior {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
